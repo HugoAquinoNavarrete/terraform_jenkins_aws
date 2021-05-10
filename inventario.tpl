@@ -1,4 +1,4 @@
 [servers]
 %{ for index, dns in public-dns ~}
-${dns} ansible_host=${public-ip[index]} # ${public-id[index]}
+${public-id[index]} ansible_host=${public-ip[index]} 
 %{ endfor ~}
