@@ -1,6 +1,7 @@
 # Script en Terraform para desplegar en AWS n instancias EC2 tipo ubuntu 
 # con acceso a internet que permiten tráfico SSH, HTTP y HTTPS
 # que logra integrarse con Ansible al generar un archivo dinámico de inventario
+# utilizado para curso de Jenkins, el script instala python para su uso con Ansible
 # Hugo Aquino
 # Mayo 2021
 
@@ -31,10 +32,14 @@ variable nombre_instancia {
 }
 
 # Para ajustar el subred ID hay que indicar el valor del ID de la subred previamente creada"
-variable subred_id {}
+variable subred_id {
+  default = "subnet"
+}
 
 # Para ajustar el security group ID hay que indicar el valor del ID del security group previamente creado"
-variable sg_id {}
+variable sg_id {
+  default = "sg"
+}
 
 # Haremos despliegue en AWS
 provider "aws" {
@@ -80,6 +85,19 @@ resource "aws_instance" "aws" {
     volume_size           = "10"
     volume_type           = "standard"
     delete_on_termination = "true"
+  }
+
+  connection {
+    host = self.public_ip
+    user = "ubuntu"
+    private_key = file("./key_lab_jenkins")
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt update",
+      "sudo apt install -y python"
+    ]
   }
 
   tags = {
