@@ -2,9 +2,9 @@
 resource "local_file" "InventarioAnsible" {
   content = templatefile("inventario.tpl",
   {
-    public-dns = aws_instance.aws.*.public_dns,
-    public-ip  = aws_instance.aws.*.public_ip,
-    public-id  = aws_instance.aws.*.id
+    public-dns = aws_instance.ubuntu.*.public_dns,
+    public-ip  = aws_instance.ubuntu.*.public_ip,
+    public-id  = aws_instance.ubuntu.*.id
   }
   )
   filename = "ansible_inventario.txt"

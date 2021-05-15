@@ -72,7 +72,7 @@ resource "aws_key_pair" "key_lab_jenkins" {
 }
 
 # Crea n instancias Ubuntu
-resource "aws_instance" "aws" {
+resource "aws_instance" "ubuntu" {
   count                       = var.cantidad_instancias
   ami                         = "ami-0d1cd67c26f5fca19"
   instance_type               = "t2.micro"
@@ -105,3 +105,4 @@ resource "aws_instance" "aws" {
   }
 
 }
+
