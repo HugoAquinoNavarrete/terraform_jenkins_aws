@@ -1,6 +1,6 @@
-# Script en Terraform para desplegar en AWS n instancias EC2 tipo ubuntu 
-# con acceso a internet que permiten tráfico SSH, HTTP y HTTPS
-# que logra integrarse con Ansible al generar un archivo dinámico de inventario
+# Script en Terraform para desplegar en AWS n instancias EC2 tipo ubuntu y windows server
+# con acceso a internet que permiten tráfico SSH, HTTP, HTTPS, RDP, WINRM
+# que logra integrarse con Ansible al generar un archivo dinámico de inventario (ubuntu y windows server)
 # utilizado para curso de Jenkins, el script instala python para su uso con Ansible
 # Hugo Aquino
 # Mayo 2021
@@ -17,18 +17,21 @@
 # ssh -v -l ubuntu -i key <ip_publica_instancia_creada> 
 
 # Para correr este script desde la consola:
-# terraform apply -var "nombre_instancia=<nombre_recursos>" -var "cantidad_instancias=<n> -var -var "subred_id=<subred_id>" -var "sg_id=<sg_id>"-auto-approve
+# terraform apply -var "nombre_instancia=<nombre_recursos>" -var "cantidad_instancias_ubuntu=<n>" -var "cantidad_instancias_windows=<n>" -var "subred_id=<subred_id>" -var "sg_id=<sg_id>"-auto-approve
 
-# Para ajustar la cantidad de VMs a crear hay que cambiar el valor de la siguiente variable a la cantidad "default = n"
+# Variable para saber cuantas instancias ubuntu crear
+variable cantidad_instancias_ubuntu {
+  default = 1
+}
 
-# Variable para saber cuantas instancias crear
-variable cantidad_instancias {
+# Variable para saber cuantas instancias windows crear
+variable cantidad_instancias_windows {
   default = 1
 }
 
 # Para ajustar el nombre de los recursos hay que cambiar el valor de la siguiente variable al nombre que desees "default = <nombre>"
 variable nombre_instancia {
-  default = "jenkins_lab"
+  default = "lab"
 }
 
 # Para ajustar el subred ID hay que indicar el valor del ID de la subred previamente creada"
@@ -73,7 +76,7 @@ resource "aws_key_pair" "key_lab_jenkins" {
 
 # Crea n instancias Ubuntu
 resource "aws_instance" "ubuntu" {
-  count                       = var.cantidad_instancias
+  count                       = var.cantidad_instancias_ubuntu
   ami                         = "ami-0d1cd67c26f5fca19"
   instance_type               = "t2.micro"
   key_name                    = aws_key_pair.key_lab_jenkins.key_name
@@ -106,3 +109,50 @@ resource "aws_instance" "ubuntu" {
 
 }
 
+# Creemos una contraseña temporal
+resource "random_string" "winrm_password" {
+  length = 10
+  special = false
+}
+
+output "password_data" {
+  description = "List of Base-64 encoded encrypted password data for the instance"
+  value       = random_string.winrm_password.result
+}
+
+# User-data
+data "template_file" "user_data" {
+  template = file("./windows.tpl")
+
+  vars = {
+    password = random_string.winrm_password.result
+  }
+}
+
+# Crea n instancias Windows
+resource "aws_instance" "windows" {
+  count                       = var.cantidad_instancias_windows
+  ami                         = "ami-0763b8ab71c00da54"
+  instance_type               = "t2.medium"
+  key_name                    = aws_key_pair.key_lab_jenkins.key_name
+  user_data                   = data.template_file.user_data.rendered
+  vpc_security_group_ids      = [var.sg_id]
+  subnet_id                   = var.subred_id
+  associate_public_ip_address = "true"
+  get_password_data           = "true"
+
+  root_block_device {
+    volume_size           = "100"
+    volume_type           = "standard"
+    delete_on_termination = "true"
+  }
+
+  connection {
+    password              = rsadecrypt(self.password_data,file("key_lab_jenkins"))
+  }
+
+  tags = {
+    Name = "${var.nombre_instancia}-win-${count.index + 1}"
+  }
+
+}

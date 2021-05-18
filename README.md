@@ -27,7 +27,8 @@ El archivo se llamará `key_lab_jenkins`
 
 ## 5. Si es la primera vez que corres el script, ejecuta `terraform init`
 
-## 6. Para ejecutar el script `terraform apply -var "nombre_instancia=<nombre_recursos>" -var "cantidad_instancias=<n> -var -var "subred_id=<subred_id>" -var "sg_id=<sg_id>" -auto-approve`. El script te pedirá le facilites los valores del ID de la subred así como el del security group:
+## 6. Para ejecutar el script `terraform apply -var "nombre_instancia=<nombre_recursos>" -var "cantidad_instancias_ubuntu=<n>" -var "cantidad_instancias_windows=<n>" -var "subred_id=<subred_id>" -var "sg_id=<sg_id>" -auto-approve`. El script te pedirá le facilites los valores del ID de la subred así como el del security group:
+
    ```bash
    var.sg_id
      Enter a value: 
@@ -42,7 +43,7 @@ Una vez el script se ejecuta generará un mensaje parecido a esto:
    Apply complete! Resources: <cantidad_recursos> added, 0 changed, 0 destroyed.
    ```
 
-## 7. Una vez ejecutado el script, se creará un archivo que contiene el inventario `ansible_inventario.txt`, ve su contenido usando el comando `cat ansible_inventario.txt`
+## 7. Una vez ejecutado el script, se crearán dos archivos que contienen el inventario ubuntu `ansible_inventario.txt` y el inventario windows `ansible_inventario_win.txt`, ve su contenido usando el comando `cat ansible_inventario.txt` o `cat ansible_inventario_win.txt`
 
 ## 8. Para eliminar la infraestructura desplegada, ejecuta `terraform destroy` y cuando aparezca el siguiente mensaje, escribe `yes`:
    ```bash
