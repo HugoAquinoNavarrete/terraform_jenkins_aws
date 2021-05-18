@@ -8,6 +8,6 @@ resource "local_file" "InventarioAnsible" {
   }
   )
   filename = "ansible_inventario.txt"
-  file_permission = "400"
+  file_permission = "600"
 }
 

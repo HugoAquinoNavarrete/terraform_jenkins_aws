@@ -9,6 +9,6 @@ resource "local_file" "InventarioAnsibleWindows" {
   }
   )
   filename = "ansible_inventario_win.txt"
-  file_permission = "400"
+  file_permission = "600"
 }
 
