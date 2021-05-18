@@ -1,6 +1,6 @@
 # Integración de Terraform con Ansible para la ejecución de Playbooks aplicados a un inventario dinámico para curso de Jenkins
 
-Script en Terraform que automatiza el despliegue en AWS n instancias EC2 tipo ubuntu con acceso a internet que permiten tráfico SSH, HTTP y HTTPS con el cual a través de un archivo se puede integrar con Ansible para ejecutar Playbooks
+Script en Terraform que automatiza el despliegue en AWS n instancias EC2 tipo ubuntu y windows con acceso a internet que permiten tráfico SSH, HTTP y HTTPS con el cual a través de un archivo se puede integrar con Ansible para ejecutar Playbooks
 
 ## 1. Configura AWS (este script corre en la región "us-west-2")
 Antes de ejecutar este script, ejecuta `aws configure` para habilitar
@@ -45,14 +45,7 @@ Una vez el script se ejecuta generará un mensaje parecido a esto:
 
 ## 7. Una vez ejecutado el script, se crearán dos archivos que contienen el inventario ubuntu `ansible_inventario.txt` y el inventario windows `ansible_inventario_win.txt`, ve su contenido usando el comando `cat ansible_inventario.txt` o `cat ansible_inventario_win.txt`
 
-## 8. Para eliminar la infraestructura desplegada, ejecuta `terraform destroy` y cuando aparezca el siguiente mensaje, escribe `yes`:
-   ```bash
-   Do you really want to destroy?
-     Terraform will destroy all your managed infrastructure, as shown above.
-     There is no undo. Only 'yes' will be accepted to confirm.
-
-     Enter a value:
-   ```
+## 8. Para eliminar la infraestructura desplegada, ejecuta `terraform destroy -var "subred_id=<subred_id>" -var "sg_id=<sg_id>" -auto-approve`:
 
 El script una vez ejecutado generará un mensaje parecido a esto:
 
