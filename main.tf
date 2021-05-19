@@ -77,7 +77,7 @@ resource "aws_key_pair" "key_lab_jenkins" {
 # Crea n instancias Ubuntu
 resource "aws_instance" "ubuntu" {
   count                       = var.cantidad_instancias_ubuntu
-  ami                         = "ami-0a8c16ff18611b4f7" #"ami-0d1cd67c26f5fca19"
+  ami                         = "ami-0d1cd67c26f5fca19"
   instance_type               = "t2.micro"
   key_name                    = aws_key_pair.key_lab_jenkins.key_name
   vpc_security_group_ids      = [var.sg_id]
@@ -85,7 +85,7 @@ resource "aws_instance" "ubuntu" {
   associate_public_ip_address = "true"
 
   root_block_device {
-    volume_size           = "20"
+    volume_size           = "10"
     volume_type           = "standard"
     delete_on_termination = "true"
   }
