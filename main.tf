@@ -78,7 +78,7 @@ resource "aws_key_pair" "key_lab_jenkins" {
 resource "aws_instance" "ubuntu" {
   count                       = var.cantidad_instancias_ubuntu
   ami                         = "ami-0d1cd67c26f5fca19"
-  instance_type               = "t2.micro"
+  instance_type               = "t3.micro"
   key_name                    = aws_key_pair.key_lab_jenkins.key_name
   vpc_security_group_ids      = [var.sg_id]
   subnet_id                   = var.subred_id
@@ -133,7 +133,7 @@ data "template_file" "user_data" {
 resource "aws_instance" "windows" {
   count                       = var.cantidad_instancias_windows
   ami                         = "ami-0763b8ab71c00da54"
-  instance_type               = "t2.medium"
+  instance_type               = "t3.micro"
   key_name                    = aws_key_pair.key_lab_jenkins.key_name
   user_data                   = data.template_file.user_data.rendered
   vpc_security_group_ids      = [var.sg_id]
