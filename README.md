@@ -1,6 +1,6 @@
 # Integración de Terraform con Ansible para la ejecución de Playbooks aplicados a un inventario dinámico para curso de Jenkins
 
-Script en Terraform que automatiza el despliegue en AWS n instancias EC2 tipo ubuntu y windows con acceso a internet que permiten tráfico SSH, HTTP y HTTPS con el cual a través de un archivo se puede integrar con Ansible para ejecutar Playbooks
+Script en Terraform que automatiza el despliegue en AWS n instancias EC2 tipo ubuntu y windows con acceso a internet que permiten tráfico SSH, HTTP, HTTPS, RDP y WINRM con el cual a través de un archivo se puede integrar con Ansible para ejecutar Playbooks
 
 ## 1. Configura AWS (este script corre en la región "us-west-2")
 Antes de ejecutar este script, ejecuta `aws configure` para habilitar
@@ -12,10 +12,13 @@ Antes de ejecutar este script, ejecuta `aws configure` para habilitar
 ## 2. Para generar una llave hay que hacer los siguientes ajustes en el archivo `main.tf` ajustando `<nombre_llave>` con el nombre que deseas tenga la llave privada
 Línea 55
    - Aparece `default = "<nombre_llave>"`, cambia `<nombre_llave>` con el nombre (sin espacios) que deseas tenga la llave
+
 Línea 72
    - Aparece `resource "aws_key_pair" "<nombre_llave>" {`, cambia `<nombre_llave>` con el nombre (sin espacios y dejando las comillas al inicio y final del nombre) que deseas tenga la llave
+
 Línea 82
    - Aparece `key_name = aws_key_pair.<nombre_llave>.key_name`, cambia `<nombre_llave>` con el nombre (sin espacios) que deseas tenga la llave
+
 Línea 137
    - Aparece `key_name = aws_key_pair.<nombre_llave>.key_name`, cambia `<nombre_llave>` con el nombre (sin espacios) que deseas tenga la llave
 
