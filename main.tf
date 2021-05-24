@@ -11,13 +11,13 @@
 # Default region name
 # Default output format (YAML)
 
-# El script creará la llave privada y cambiará el permiso a 400 al archivo de la llave
+# El script creará la llave privada y cambiará el permiso a 600 al archivo de la llave
 
 # Para conectarte con la VM una vez creada
 # ssh -v -l ubuntu -i key <ip_publica_instancia_creada> 
 
 # Para correr este script desde la consola:
-# terraform apply -var "nombre_instancia=<nombre_recursos>" -var "cantidad_instancias_ubuntu=<n>" -var "cantidad_instancias_windows=<n>" -var "subred_id=<subred_id>" -var "sg_id=<sg_id>"-auto-approve
+# terraform apply -var "nombre_instancia=<nombre_recursos>" -var "cantidad_instancias_ubuntu=<n>" -var "cantidad_instancias_windows=<n>" -var "subred_id=<subred_id>" -var "sg_id=<sg_id>" -var "key_name=<nombre_llave>" -auto-approve
 
 # Variable para saber cuantas instancias ubuntu crear
 variable cantidad_instancias_ubuntu {
@@ -52,7 +52,7 @@ provider "aws" {
 
 # Veamos la creación automática de la llave privada
 variable "key_name" {
-   default = "key_lab_jenkins"
+   default = "<nombre_llave>"
 }
 
 resource "tls_private_key" "private_key" {
@@ -60,16 +60,16 @@ resource "tls_private_key" "private_key" {
   rsa_bits  = 4096
 
   provisioner local-exec { 
-    command = "echo '${self.private_key_pem}' > ./key_lab_jenkins"
+    command = "echo '${self.private_key_pem}' > ./'${var.key_name}'"
   }
 
   provisioner "local-exec" {
-    command = "chmod 600 ./key_lab_jenkins"
+    command = "chmod 600 ./'${var.key_name}'"
   }
 
 }
 
-resource "aws_key_pair" "key_lab_jenkins" {
+resource "aws_key_pair" "<nombre_llave>" {
   key_name   = var.key_name
   public_key = tls_private_key.private_key.public_key_openssh
 }
@@ -79,7 +79,7 @@ resource "aws_instance" "ubuntu" {
   count                       = var.cantidad_instancias_ubuntu
   ami                         = "ami-0d1cd67c26f5fca19"
   instance_type               = "t2.micro"
-  key_name                    = aws_key_pair.key_lab_jenkins.key_name
+  key_name                    = aws_key_pair.<nombre_llave>.key_name
   vpc_security_group_ids      = [var.sg_id]
   subnet_id                   = var.subred_id
   associate_public_ip_address = "true"
@@ -93,7 +93,7 @@ resource "aws_instance" "ubuntu" {
   connection {
     host = self.public_ip
     user = "ubuntu"
-    private_key = file("./key_lab_jenkins")
+    private_key = file("./${var.key_name}")
   }
 
   provisioner "remote-exec" {
@@ -134,7 +134,7 @@ resource "aws_instance" "windows" {
   count                       = var.cantidad_instancias_windows
   ami                         = "ami-0763b8ab71c00da54"
   instance_type               = "t2.medium"
-  key_name                    = aws_key_pair.key_lab_jenkins.key_name
+  key_name                    = aws_key_pair.<nombre_llave>.key_name
   user_data                   = data.template_file.user_data.rendered
   vpc_security_group_ids      = [var.sg_id]
   subnet_id                   = var.subred_id
@@ -148,7 +148,7 @@ resource "aws_instance" "windows" {
   }
 
   connection {
-    password              = rsadecrypt(self.password_data,file("key_lab_jenkins"))
+    password              = rsadecrypt(self.password_data,file("./${var.key_name}"))
   }
 
   tags = {
