@@ -69,7 +69,7 @@ resource "tls_private_key" "private_key" {
 
 }
 
-resource "aws_key_pair" "<nombre_llave>" {
+resource "aws_key_pair" "llave" {
   key_name   = var.key_name
   public_key = tls_private_key.private_key.public_key_openssh
 }
@@ -78,8 +78,8 @@ resource "aws_key_pair" "<nombre_llave>" {
 resource "aws_instance" "ubuntu" {
   count                       = var.cantidad_instancias_ubuntu
   ami                         = "ami-0d1cd67c26f5fca19"
-  instance_type               = "t2.micro"
-  key_name                    = aws_key_pair.<nombre_llave>.key_name
+  instance_type               = "t3.medium"
+  key_name                    = aws_key_pair.llave.key_name
   vpc_security_group_ids      = [var.sg_id]
   subnet_id                   = var.subred_id
   associate_public_ip_address = "true"
@@ -133,8 +133,8 @@ data "template_file" "user_data" {
 resource "aws_instance" "windows" {
   count                       = var.cantidad_instancias_windows
   ami                         = "ami-0763b8ab71c00da54"
-  instance_type               = "t2.medium"
-  key_name                    = aws_key_pair.<nombre_llave>.key_name
+  instance_type               = "t3.medium"
+  key_name                    = aws_key_pair.llave.key_name
   user_data                   = data.template_file.user_data.rendered
   vpc_security_group_ids      = [var.sg_id]
   subnet_id                   = var.subred_id

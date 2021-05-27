@@ -9,18 +9,9 @@ Antes de ejecutar este script, ejecuta `aws configure` para habilitar
    - Default region name 
    - Default output format (json,yaml,yaml-stream,text,table)
 
-## 2. Para generar una llave hay que hacer los siguientes ajustes en el archivo `main.tf` ajustando `<nombre_llave>` con el nombre que deseas tenga la llave privada
+## 2. Para generar una llave hay que hacer el siguiente ajuste en el archivo `main.tf` ajustando `<nombre_llave>` con el nombre que deseas tenga la llave privada
 Línea 55
    - Aparece `default = "<nombre_llave>"`, cambia `<nombre_llave>` con el nombre (sin espacios) que deseas tenga la llave
-
-Línea 72
-   - Aparece `resource "aws_key_pair" "<nombre_llave>" {`, cambia `<nombre_llave>` con el nombre (sin espacios y dejando las comillas al inicio y final del nombre) que deseas tenga la llave
-
-Línea 82
-   - Aparece `key_name = aws_key_pair.<nombre_llave>.key_name`, cambia `<nombre_llave>` con el nombre (sin espacios) que deseas tenga la llave
-
-Línea 137
-   - Aparece `key_name = aws_key_pair.<nombre_llave>.key_name`, cambia `<nombre_llave>` con el nombre (sin espacios) que deseas tenga la llave
 
 ## 3. Una vez hechos los cambios al archivo `main.tf`, hay que hacer un `commit` al repositorio
    ```bash
